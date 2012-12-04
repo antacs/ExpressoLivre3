@@ -571,7 +571,6 @@ class Felamimail_Controller_Message_Send extends Felamimail_Controller_Message_A
                     $name = $tempFile->name;
                     $type = $tempFile->type;
                 }
-                
                 $part->disposition = Zend_Mime::DISPOSITION_ATTACHMENT;
                 $part->filename = Zend_Mime::encodeQuotedPrintableHeader($name, "UTF-8"); // RFC2047 encode
                 $part->type = $type . '; name="' . Zend_Mime::encodeQuotedPrintableHeader($name, "UTF-8") . '"';
