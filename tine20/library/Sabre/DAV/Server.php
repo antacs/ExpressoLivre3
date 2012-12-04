@@ -446,7 +446,8 @@ class Sabre_DAV_Server {
             'PROPPATCH',
             'COPY',
             'MOVE',
-            'REPORT'
+            'REPORT',
+            'POST'
         );
 
         if (in_array($method,$internalMethods)) {
@@ -1000,6 +1001,25 @@ class Sabre_DAV_Server {
         }
 
     }
+    
+    /*POST
+     */
+   
+     protected function httpPost($uri) {
+
+        $body = $this->httpRequest->getBody(true);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+
+        $reportName = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
+
+        if ($this->broadcastEvent('report',array($reportName,$dom, $uri))) {
+
+            // If broadcastEvent returned true, it means the report was not supported
+            throw new Sabre_DAV_Exception_ReportNotImplemented();
+
+        }
+
+    }
 
     // }}}
     // {{{ HTTP/WebDAV protocol helpers 
@@ -1022,7 +1042,8 @@ class Sabre_DAV_Server {
             'PROPPATCH',
             'COPY',
             'MOVE',
-            'REPORT'
+            'REPORT',
+            'POST'
         );
 
         // The MKCOL is only allowed on an unmapped uri

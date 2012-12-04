@@ -24,6 +24,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
+    const NS_INVERSE = 'urn:inverse:params:xml:ns:inverse-dav';
+
     /**
      * The following constants are used to differentiate
      * the various filters for the calendar-query report
@@ -41,6 +43,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     const CALENDAR_ROOT = 'calendars';
 
     const TASK_ROOT = 'tasks';
+
     /**
      * Reference to server object 
      * 
@@ -119,6 +122,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             return array(
                  '{' . self::NS_CALDAV . '}calendar-multiget',
                  '{' . self::NS_CALDAV . '}calendar-query',
+                 '{' . self::NS_CALDAV . '}principal-match',
+                 '{' . self::NS_INVERSE . '}acl-query',
+                 '{' . self::NS_INVERSE . '}user-query',
+             
             );
         }
         return array();
@@ -203,6 +210,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
             case '{'.self::NS_CALDAV.'}calendar-query' :
                 $this->calendarQueryReport($dom);
+                return false;
+            case '{'.self::NS_CALDAV.'}principal-match' :
+                $this->calendarPrincipalMatch($dom);
+                return false;
+            case '{'.self::NS_INVERSE.'}acl-query' :
+                $this->calendarAclQuery($dom);
+                return false;
+            case '{'.self::NS_INVERSE.'}user-query' :
+                $this->calendarUserQuery($dom);
                 return false;
 
         }
@@ -334,6 +350,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $calDataProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-data';
             if (in_array($calDataProp, $requestedProperties)) {
                 unset($requestedProperties[$calDataProp]);
+               
                 $val = $node->get();
                 if (is_resource($val))
                     $val = stream_get_contents($val);
@@ -428,8 +445,303 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $this->server->httpResponse->sendBody($this->server->generateMultiStatus($verifiedNodes));
 
     }
+   
+    /* Implementing Principal Match */   
+ 
+    public function  calendarPrincipalMatch($dom){
+
+        $self = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','self');
+        if ($self->length==1) {
+             $user = Tinebase_Core::getUser()->getId();
+             $domout = new DOMDocument('1.0','utf-8');
+             
+             $domout->formatOutput = true;
+             $response = $domout->createElement('D:Response');
+             $domout->appendChild($response);
+             $response->appendChild(new DOMElement('D:href', '/principal/users/'.$user));
+             $response->appendChild(new DOMElement('D:status', 'HTTP/1.1 200 ok'));
+
+        }
+          $this->server->httpResponse->sendStatus(207);
+          $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+          $this->server->httpResponse->sendBody($this->server->generateMultiStatus($response));
+
+    }
+
+    /* ACEs for sogo integrator */
+
+  
+    public function calendarAclQuery($dom) {
+
+        if(preg_match('/calendars/',$this->server->httpRequest->getUri()))
+          $application = 'Calendar';
+        else
+          $application = 'Tasks';
+        if(preg_match('/addressbooks/',$this->server->httpRequest->getUri()))
+          $application = 'Addressbook';
+        //$url = preg_split('/\//',$this->server->httpRequest->getUri(),-1);
+        ///$ids = end($url);
+        list($parent, $name) = Sabre_DAV_URLUtil::splitPath($this->server->httpRequest->getUri());
+        if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' FLAMENGO APP : ' . $application );
+
+        $userlists = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','user-list');
+        if ($userlists->length==1) {
+
+              if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . $name );
+              $containers['results'] = Tinebase_Container::getInstance()->getGrantsOfContainer($name);
+              $containers['totalcount'] = count($containers['results']);
+              $domout = new DOMDocument('1.0','utf-8');
+              $domout->formatOutput = true;
+              $userlist = $domout->createElement('user-list');
+              $domout->appendChild($userlist);
+              foreach($containers['results'] as &$value) {
+                  switch($value['account_type']) {
+                       case Tinebase_Acl_Rights::ACCOUNT_TYPE_USER:
+                            try {
+                                $account = Tinebase_User::getInstance()->getFullUserById($value['account_id']);
+                                } catch (Tinebase_Exception_NotFound $e) {
+                                $account = Tinebase_User::getInstance()->getNonExistentUser();
+                                }
+                            $user = $account->toArray();
+                            $userr = $domout->createElement('user');
+                            $userlist->appendChild($userr);
+                            $userr->appendChild(new DOMElement('id', $user['accountId']));
+                            $userr->appendChild(new DOMElement('displayName', $user['accountFullName']));
+                            $userr->appendChild(new DOMElement('email', $user['accountEmailAddress']));
+
+                            break;
+                       case Tinebase_Acl_Rights::ACCOUNT_TYPE_GROUP:
+                            try {
+                                $group = Tinebase_Group::getInstance()->getGroupById($value['account_id']);
+                                } catch (Tinebase_Exception_Record_NotDefined $e) {
+                                $group = Tinebase_Group::getInstance()->getNonExistentGroup();
+                                }
+                           $group = $group->toArray();
+                           break;
+                      case Tinebase_Acl_Rights::ACCOUNT_TYPE_ANYONE:
+                           $all = array('accountDisplayName' => 'Anyone');
+                           $userr = $domout->createElement('user');
+                           $userlist->appendChild($userr);
+                           $userr->appendChild(new DOMElement('id','anonymous'));
+                           $userr->appendChild(new DOMElement('displayName', 'Public User'));
+                           $userr->appendChild(new DOMElement('email', 'anonymous'));
+
+                           break;
+                      default:
+                           throw new Tinebase_Exception_InvalidArgument('Unsupported accountType.');
+                           break;
+                  }
+           }
 
 
+        
+          $xmml = $domout->saveXML();
+
+          if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+          $this->server->httpResponse->sendStatus(207);
+          $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+          $this->server->httpResponse->sendBody(str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+        }
+       $roles = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','roles');
+       if ($roles->length==1) {
+
+          $user = $roles->item(0)->getAttribute('user');
+          if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . $user );
+              $acls['results'] = Tinebase_Container::getInstance()->getGrantsOfAccount($user,$name);
+              $acls['totalcount'] = count($acls['results']);
+
+          if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . print_r($acls,true));
+              $domout = new DOMDocument('1.0','utf-8');
+              $domout->formatOutput = true;
+              $role = $domout->createElement('roles');
+              $domout->appendChild($role);
+              foreach($acls['results'] as $acl => $value) {
+                  if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' fazendo acl : ' . $acl );
+ 
+                  switch($acl) {
+                       case Tinebase_Model_Grants::GRANT_READ:
+                            if($value) 
+                                $role->appendChild(new DOMElement('ObjectViewer'));
+                            break;
+                       case Tinebase_Model_Grants::GRANT_PRIVATE:
+                            if($value) 
+                                $role->appendChild(new DOMElement('PrivateViewer'));
+                           break;
+                       case Tinebase_Model_Grants::GRANT_EDIT:
+                            if($value) 
+                                $role->appendChild(new DOMElement('ObjectEditor'));
+                           break;
+                      case Tinebase_Model_Grants::GRANT_ADD:
+                            if($value) 
+                                $role->appendChild(new DOMElement('ObjectCreator'));
+                           break;
+                      case Tinebase_Model_Grants::GRANT_DELETE:
+                            if($value) 
+                                $role->appendChild(new DOMElement('ObjectEraser'));
+                           break;
+                  }
+           }
+ 
+          $xmml = $domout->saveXML();
+          if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+          $this->server->httpResponse->sendStatus(207);
+          $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+          $this->server->httpResponse->sendBody(str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+
+       }
+      $adduser = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','add-user');
+      if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' OLAOLAOLAOLA : ' . $adduser->length);
+      if ($adduser->length==1) {
+            $grants = Tinebase_Container::getInstance()->getGrantsOfContainer($name);
+
+            $user = $adduser->item(0)->getAttribute('user');
+            $newgrant = new Tinebase_Record_RecordSet('Tinebase_Model_Grants', array(
+            array(
+                'account_id'      => $user,
+                'account_type'    => Tinebase_Acl_Rights::ACCOUNT_TYPE_USER,
+                Tinebase_Model_Grants::GRANT_FREEBUSY  => true
+            )
+            ));
+            $newgrants = $grants->merge($newgrant);
+            if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . print_r($newgrants,true));
+
+            $grantss = Tinebase_Container::getInstance()->setGrants($name, $grants, TRUE, FALSE);
+        if ($grants)
+        { 
+         $this->server->httpResponse->sendStatus(201);
+         $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+         }
+       }
+      $removeuser = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','remove-user');
+      if ($removeuser->length==1) {
+            $grants = Tinebase_Container::getInstance()->getGrantsOfContainer($name);
+
+            $user = $removeuser->item(0)->getAttribute('user');
+            $newgrant = $grants->filter('account_id',$user);
+            $grants->removeRecords($newgrant);
+
+            if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . print_r($newgrants,true));
+
+            $grantss = Tinebase_Container::getInstance()->setGrants($name, $grants, TRUE, FALSE);
+        if ($grants)
+        { 
+         $this->server->httpResponse->sendStatus(201);
+         $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+         }
+       }
+      $setroles = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','set-roles');
+      if ($setroles->length==1) {
+            $grants = Tinebase_Container::getInstance()->getGrantsOfContainer($name);
+
+            $user = $setroles->item(0)->getAttribute('user');
+            $newgrant = $grants->filter('account_id',$user);
+            $grants->removeRecords($newgrant);
+
+            $check = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','ObjectCreator');
+            if($check->length==1)
+            {
+                $newgrant->__set('readGrant',true);
+                $newgrant->__set('addGrant',true);
+                $newgrant->__set('editGrant',true);
+                $newgrant->__set('exportGrant',true);
+                $newgrant->__set('syncGrant',true);
+            }
+            else
+            {
+
+                $newgrant->__set('readGrant',false);
+                $newgrant->__set('addGrant',false);
+                $newgrant->__set('editGrant',false);
+                $newgrant->__set('exportGrant',false);
+                $newgrant->__set('syncGrant',false);
+
+            }
+            $check = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','ObjectEditor');
+            if ($check->length==1)
+               $newgrant->__set('editGrant',true);
+            else
+               $newgrant->__set('editGrant',false);
+
+            $check = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','ObjectViewer');
+            if ($check->length==1)
+                $newgrant->__set('readGrant',true);
+            else  
+                $newgrant->__set('readGrant',false);
+
+            $check = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','ObjectEraser');
+            if ($check->length==1)
+               $newgrant->__set('deleteGrant',true);
+            else
+               $newgrant->__set('deleteGrant',false);
+
+            $newgrants = $grants->merge($newgrant);
+
+            $grantss = Tinebase_Container::getInstance()->setGrants($name, $grants, TRUE, FALSE);
+        if ($grantss)
+        { 
+         $this->server->httpResponse->sendStatus(201);
+         $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+         }
+       }
+    }
+    public function calendarUserQuery($dom) {
+
+        if(preg_match('/calendars/',$this->server->httpRequest->getUri()))
+          $application = 'Calendar';
+        else
+          $application = 'Tasks';
+        //$url = preg_split('/\//',$this->server->httpRequest->getUri(),-1);
+        ///$ids = end($url);
+        list($parent, $name) = Sabre_DAV_URLUtil::splitPath($this->server->httpRequest->getUri());
+
+        $users = $dom->getElementsByTagNameNS('urn:inverse:params:xml:ns:inverse-dav','users');
+        if ($users->length==1) {
+             $match = $users->item(0)->getAttribute('match-name');
+             $decodedFilter = array (
+                            '0' => Array
+                                (
+                                    'field' => 'query',
+                                    'operator' => 'contains',
+                                    'value' => $match,
+                                ),
+
+                            '1' => Array
+                                (
+                                    'field' => 'type',
+                                    'operator' => 'equals',
+                                    'value' => 'user',
+                                ),
+
+
+             );
+
+             $_controller = Addressbook_Controller_Contact::getInstance();
+             $filter = new Addressbook_Model_ContactFilter(array());
+             $filter->setFromArrayInUsersTimezone($decodedFilter);
+
+             $records = $_controller->search($filter);
+             $domout = new DOMDocument('1.0','utf-8');
+             $domout->formatOutput = true;
+             $users = $domout->createElement('users');
+             $domout->appendChild($users);
+
+             foreach( $records as $record)
+             {
+                 $user = $domout->createElement('user');
+                 $users->appendChild($user);
+                 $user->appendChild(new DOMElement('id', $record->account_id));
+                 $user->appendChild(new DOMElement('displayName', $record->n_fn));
+                 $user->appendChild(new DOMElement('email', $record->email));
+             }
+
+
+          $xmml = $domout->saveXML();
+          if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' id container : ' . str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+          $this->server->httpResponse->sendStatus(207);
+          $this->server->httpResponse->setHeader('Content-Type','text/xml; charset=utf-8');
+          $this->server->httpResponse->sendBody(str_replace(array("\r\n", "\n", "\r","  "),'',$xmml));
+         }
+    }
     /**
      * Verify if a list of filters applies to the calendar data object 
      *
@@ -500,7 +812,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 }
 
-            } 
+            }
 
             if (isset($filter['text-match'])) {
                 $currentString = (string)$elem;
@@ -508,17 +820,17 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $isMatching = Sabre_DAV_StringUtil::textMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
                 if ($filter['text-match']['negate-condition'] && $isMatching) return false;
                 if (!$filter['text-match']['negate-condition'] && !$isMatching) return false;
-                
+
             }
 
         }
         return true;
-        
+
     }
 
     /**
      * Checks whether a time-range filter matches an event.
-     * 
+     *
      * @param SimpleXMLElement $xml Event as xml object 
      * @param string $currentXPath XPath to check 
      * @param array $currentFilter Filter information 
