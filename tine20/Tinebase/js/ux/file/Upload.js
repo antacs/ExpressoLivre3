@@ -736,6 +736,7 @@ Ext.extend(Ext.ux.file.Upload, Ext.util.Observable, {
  */
 Ext.ux.file.Upload.file = Ext.data.Record.create([
     {name: 'id', type: 'text', system: true},
+    {name: 'partId', system: true},
     {name: 'uploadKey', type: 'text', system: true},
     {name: 'name', type: 'text', system: true},
     {name: 'size', type: 'number', system: true},
@@ -750,7 +751,7 @@ Ext.ux.file.Upload.file = Ext.data.Record.create([
 ]);
 
 Ext.ux.file.Upload.file.getFileData = function(file) {
-    return Ext.copyTo({}, file.data, ['tempFile', 'name', 'path', 'size', 'type']);
+    return Ext.copyTo({}, file.data, ['tempFile', 'name', 'path', 'size', 'type','partId']);
 };
 
 /**

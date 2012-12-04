@@ -358,12 +358,22 @@ Ext.namespace('Tine.Felamimail');
      */
     initAttachements: function(message) {
         if (message.get('attachments').length > 0) {
-            this.record.set('attachments', [{
-                name: message.get('subject'),
-                type: 'message/rfc822',
-                size: message.get('size'),
-                id: message.id
-            }]);
+             Attachments = [];
+            for(i in message.get('attachments')){
+               
+                if(message.get('attachments')[i].size && !message.get('attachments')[i].cid){
+                    
+                    Attachments.push(
+                        {
+                        name: message.get('attachments')[i]['filename'],
+                        type: message.get('attachments')[i]['content-type'],
+                        size: message.get('attachments')[i]['size'],
+                        partId:  message.get('attachments')[i]['partId'],
+                        id: message.id
+                     });
+                }
+            }
+            this.record.set('attachments',Attachments);
         }
     },
     

@@ -126,7 +126,7 @@ class Felamimail_Controller_Message_Send extends Felamimail_Controller_Message_A
         $sourceAccount = Felamimail_Controller_Account::getInstance()->get($_message->account_id);
         $folder = ($_folder instanceof Felamimail_Model_Folder) ? $_folder : Felamimail_Controller_Folder::getInstance()->getByBackendAndGlobalName($_message->account_id, $_folder);
         $targetAccount = ($_message->account_id == $folder->account_id) ? $sourceAccount : Felamimail_Controller_Account::getInstance()->get($folder->account_id);
-        
+        $this->_resolveOriginalMessage($_message);
         $mailToAppend = $this->createMailForSending($_message, $sourceAccount);
         
         $transport = new Felamimail_Transport();
@@ -540,10 +540,11 @@ class Felamimail_Controller_Message_Send extends Felamimail_Controller_Message_A
                 if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' Adding attachment: ' . print_r($attachment, TRUE));
                 
                 if ($attachment['type'] == Felamimail_Model_Message::CONTENT_TYPE_MESSAGE_RFC822 && $_message->original_id instanceof Felamimail_Model_Message) {
-                    $part = $this->getMessagePart($_message->original_id, ($_message->original_part_id) ? $_message->original_part_id : NULL);
+
+                    $part = $this->getMessagePart($_message->original_id,$attachment['partId']);
                     $part->decodeContent();
                     
-                    $name = $attachment['name'] . '.eml';
+                    $name = $attachment['name'];
                     $type = $attachment['type'];
                     
                 } else {
