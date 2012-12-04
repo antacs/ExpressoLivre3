@@ -283,22 +283,48 @@ class Tinebase_User_Ldap extends Tinebase_User_Sql implements Tinebase_User_Inte
      */
     public function setPassword($_userId, $_password, $_encrypt = TRUE, $_mustChange = null)
     {
-        if ($this->_isReadOnlyBackend) {
-            return;
+        //bypass password encryption; LDAP encrypts by itself
+        if($this->_options['pwEncType'] == 'PLAIN')
+        {
+            $_encrypt = FALSE;
+        }
+
+        $encryptionType = isset($this->_options['pwEncType']) ? $this->_options['pwEncType'] : Tinebase_User_Abstract::ENCRYPT_SSHA;
+        $userpassword = $_encrypt ? Hash_Password::generate($encryptionType, $_password) : $_password;
+        
+        if(isset($this->_options['masterLdapHost']) && $this->_options['masterLdapHost'] != "")
+        {
+            $this->_isReadOnlyBackend = false;
+            
+            $this->_options['host'] = $this->_options['masterLdapHost'];
+            $this->_options['username'] = $this->_options['masterLdapUsername'];
+            $this->_options['password'] = $this->_options['masterLdapPassword'];
+            
+            $this->_ldap = new Tinebase_Ldap($this->_options);
+            $this->_ldap->bind();
+            
+            $ldapData = array(
+                'userpassword'     => $userpassword,
+            );
+            
+        }else {
+            
+            if ($this->_isReadOnlyBackend) {
+                $translate = Tinebase_Translation::getTranslation('Tinebase');
+                throw new Tinebase_Exception($translate->_('Server is readonly.'));
+            }
+            
+            $ldapData = array(
+                'userpassword'     => $userpassword,
+                'shadowlastchange' => floor(Tinebase_DateTime::now()->getTimestamp() / 86400)
+            );
+            
         }
         
         $user = $_userId instanceof Tinebase_Model_FullUser ? $_userId : $this->getFullUserById($_userId);
 
         $metaData = $this->_getMetaData($user);
-
-        $encryptionType = isset($this->_options['pwEncType']) ? $this->_options['pwEncType'] : Tinebase_User_Abstract::ENCRYPT_SSHA;
-        $userpassword = $_encrypt ? Hash_Password::generate($encryptionType, $_password) : $_password;
         
-        $ldapData = array(
-            'userpassword'     => $userpassword,
-            'shadowlastchange' => floor(Tinebase_DateTime::now()->getTimestamp() / 86400)
-        );
-
         foreach ($this->_ldapPlugins as $plugin) {
             $plugin->inspectSetPassword($user, $_password, $_encrypt, $_mustChange, $ldapData);
         }

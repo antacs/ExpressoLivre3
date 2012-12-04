@@ -168,9 +168,10 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
         try {
             Tinebase_Controller::getInstance()->changePassword($oldPassword, $newPassword);
         } catch (Tinebase_Exception $e) {
+            $translate = Tinebase_Translation::getTranslation('Tinebase');
             $response = array(
                 'success'      => FALSE,
-                'errorMessage' => "New password could not be set! Error: " . $e->getMessage()
+                'errorMessage' => $translate->_("New password could not be set! Error: ") . $e->getMessage()
             );
         }
 

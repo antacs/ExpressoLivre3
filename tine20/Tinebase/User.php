@@ -122,6 +122,10 @@ class Tinebase_User
             self::DEFAULT_ADMIN_GROUP_NAME_KEY => Tinebase_Group::DEFAULT_ADMIN_GROUP,
             'changepw' => true,
             'readonly' => false,
+            'masterLdapHost' => '',
+            'masterLdapUsername' => '',
+            'masterLdapPassword' => '',
+            'masterLdapReadOnly' => false,
          )
     );
     

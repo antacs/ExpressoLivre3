@@ -513,7 +513,7 @@ Tine.Setup.AuthenticationPanel = Ext.extend(Tine.Tinebase.widgets.form.ConfigPan
                         Ext.applyIf({
                             name: 'accounts_Ldap_pwEncType',
                             fieldLabel: this.app.i18n._('Password encoding'),
-                            store: [['CRYPT', 'CRYPT'], ['SHA', 'SHA'], ['MD5', 'MD5']],
+                            store: [['CRYPT', 'CRYPT'], ['SHA', 'SHA'], ['MD5', 'MD5'], ['PLAIN', 'PLAIN']],
                             value: 'CRYPT'
                         }, commonComboConfig), 
                         Ext.applyIf({
@@ -558,7 +558,19 @@ Tine.Setup.AuthenticationPanel = Ext.extend(Tine.Tinebase.widgets.form.ConfigPan
                             fieldLabel: this.app.i18n._('Readonly access'),
                             store: [['0', this.app.i18n._('No')], ['1', this.app.i18n._('Yes')]],
                             value: '0'
-                        }, commonComboConfig)]
+                        }, commonComboConfig),
+                        {
+                        name: 'accounts_Ldap_masterLdapHost',
+                        fieldLabel: this.app.i18n._('LDAP Master Host (write access)')
+                        }, {
+                            name: 'accounts_Ldap_masterLdapUsername',
+                            fieldLabel: this.app.i18n._('LDAP Master Login name')
+                        },{
+                            name: 'accounts_Ldap_masterLdapPassword',
+                            fieldLabel: this.app.i18n._('LDAP Master Login Password'),
+                            inputType: 'password'
+                        },
+                    ]
                     }]
             } ]
           }, {
