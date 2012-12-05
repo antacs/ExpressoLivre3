@@ -774,7 +774,7 @@ Tine.Felamimail.getSignature = function(id) {
 };
 
 /**
- * get email string (n_fileas <email@host.tld>) from contact
+ * get email string (n_fn <email@host.tld>) from contact
  * 
  * @param {Tine.Addressbook.Model.Contact} contact
  * @return {String}
