@@ -183,33 +183,33 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
         Tine.Messenger.Application.connection.connect(
             Tine.Messenger.Util.getJidFromConfig(),
             base64.encode(textToSend),
-            Tine.Tinebase.appMgr.get('Messenger').connectionHandler
+            Tine.Messenger.Util.callbackWrapper(Tine.Tinebase.appMgr.get('Messenger').connectionHandler)
         );
     },
     
-    connectionHandler: function (status) {
+    connectionHandler: function (status, e) {
         console.log('STATUS: ' + status);
-        if (status === Strophe.Status.CONNECTING) {
+        if (status === Strophe.Status.CONNECTING) {  // Status = 1
             Tine.Messenger.Log.debug("Connecting...");
             // When connecting OK, take off the line below
             //Ext.getCmp('messenger-connect-cmd').setText(IM.i18n()._('Connecting')+'...').disable();
             //$('.messenger-connect-display img').css('display','block');
             
-        } else if (status === Strophe.Status.CONNFAIL) {
+        } else if (status === Strophe.Status.CONNFAIL) {  // Status = 2
             Tine.Messenger.RosterHandler.clearRoster();
             // Disable components
             Tine.Messenger.IM.disableOnDisconnect();
             Tine.Messenger.Log.error("Connection failed!");
             Ext.Msg.show({
                 title: _('Error'),
-                msg: _('Authentication failed')+'!',
+                msg: _('Can\'t connect to server')+'!',
                 buttons: Ext.Msg.OK,
                 icon: Ext.MessageBox.ERROR
             });
-        } else if (status === Strophe.Status.AUTHENTICATING) {
+        } else if (status === Strophe.Status.AUTHENTICATING) {  // Status = 3
             Tine.Messenger.Log.debug("Authenticating...");
             // When connecting OK, take off the line below
-        } else if (status === Strophe.Status.CONNECTED || status == Strophe.Status.ATTACHED) {
+        } else if (status === Strophe.Status.CONNECTED || status == Strophe.Status.ATTACHED) {  // Status = 5 or 8
             Tine.Messenger.Log.debug("Connected!");
             var XMPPConnection = Tine.Tinebase.appMgr.get('Messenger').getConnection();
             console.log(XMPPConnection);
@@ -219,48 +219,57 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
             // START THE HANDLERS
             // Chat Messaging handler
             XMPPConnection.addHandler(
-                Tine.Messenger.ChatHandler.onIncomingMessage, null, 'message', 'chat'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.ChatHandler.onIncomingMessage),
+                null, 'message', 'chat'
             );
                 
             // File Transfer
             XMPPConnection.addHandler(
-                Tine.Messenger.FileTransfer.onRequest, null, 'message', 'filetransfer'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.FileTransfer.onRequest),
+                null, 'message', 'filetransfer'
             );
                 
             // Conference handler
             XMPPConnection.addHandler(
-                Tine.Messenger.ChatHandler.onMUCMessage, null, 'message', 'normal'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.ChatHandler.onMUCMessage),
+                null, 'message', 'normal'
             );
             
             // Getting Roster
             var roster = $iq({"type": "get"}).c("query", {"xmlns": "jabber:iq:roster"});
             XMPPConnection.sendIQ(
-                roster, Tine.Messenger.RosterHandler._onStartRoster
+                roster, Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onStartRoster)
             );
                 
             // Updating Roster
             XMPPConnection.addHandler(
-                Tine.Messenger.RosterHandler._onRosterUpdate, 'jabber:client', 'iq', 'set'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onRosterUpdate),
+                'jabber:client', 'iq', 'set'
             );
               
             XMPPConnection.addHandler(
-                Tine.Messenger.RosterHandler._onRosterGet, 'jabber:client', 'iq', 'get'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onRosterGet),
+                'jabber:client', 'iq', 'get'
             );
                 
             XMPPConnection.addHandler(
-                Tine.Messenger.RosterHandler._onRosterResult, 'jabber:client', 'iq', 'result'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.RosterHandler._onRosterResult),
+                'jabber:client', 'iq', 'result'
             );
             
             XMPPConnection.addHandler(
-                Tine.Messenger.LogHandler._onError, 'jabber:client', 'iq', 'error'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.LogHandler._onError),
+                'jabber:client', 'iq', 'error'
             );
 
             XMPPConnection.addHandler(
-                Tine.Messenger.LogHandler._onErrorMessage, null, 'message', 'error'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.LogHandler._onErrorMessage),
+                null, 'message', 'error'
             );
                 
             XMPPConnection.addHandler(
-                Tine.Messenger.LogHandler._getPresence, 'jabber:client', 'presence'
+                Tine.Messenger.Util.callbackWrapper(Tine.Messenger.LogHandler._getPresence),
+                'jabber:client', 'presence'
             );
 
             // Load emoticons.xml
@@ -275,21 +284,43 @@ Tine.Messenger.Application = Ext.extend(Tine.Tinebase.Application, {
             window.onunload = function () {
                 Tine.Tinebase.appMgr.get('Messenger').stopMessenger('Close window!');
             }
-        } else if (status === Strophe.Status.DISCONNECTED) {
+        } else if (status === Strophe.Status.DISCONNECTED) {  // Status = 6
             Tine.Messenger.RosterHandler.clearRoster();
             // Disable components
             Tine.Messenger.IM.disableOnDisconnect();
             
-            Ext.Msg.alert('Expresso Messenger', IM.i18n()._('Messenger has been disconnected!'));
+            Ext.Msg.alert('Expresso Messenger', _('Messenger has been disconnected!'));
             window.onbeforeunload = null;
             window.onunload = null;
-        } else if (status === Strophe.Status.AUTHFAIL) {
-            Tine.Messenger.RosterHandler.clearRoster();
+        } else if (status === Strophe.Status.AUTHFAIL || status === Strophe.Status.DISCONNECTING) {  // Status = 4 or 7
+            //Tine.Messenger.RosterHandler.clearRoster();
+            // Disable components
+            Tine.Messenger.IM.disableOnDisconnect();
+            if (status == Strophe.Status.AUTHFAIL)
+                Ext.Msg.show({
+                    title: _('Error'),
+                    msg: _('Authentication failed') + '!',
+                    buttons: Ext.Msg.OK,
+                    icon: Ext.MessageBox.ERROR
+                });
+            else {
+                if (Tine.Tinebase.appMgr.get('Messenger').getConnection().connected)
+                    Ext.Msg.alert('Expresso Messenger', _('Disconnecting') + '...');
+                else
+                    Ext.Msg.show({
+                        title: _('Error'),
+                        msg: _('Can\'t connect to server') + '!',
+                        buttons: Ext.Msg.OK,
+                        icon: Ext.MessageBox.ERROR
+                    });
+            }
+        } else {
+            //Tine.Messenger.RosterHandler.clearRoster();
             // Disable components
             Tine.Messenger.IM.disableOnDisconnect();
             Ext.Msg.show({
-                title: IM.i18n()._('Error'),
-                msg: IM.i18n()._('Authentication failed') + '!',
+                title: _('Error'),
+                msg: _('Unknown error') + '!',
                 buttons: Ext.Msg.OK,
                 icon: Ext.MessageBox.ERROR
             });
@@ -326,26 +357,30 @@ Tine.Messenger.IM = {
         // Change IM icon
         Ext.getCmp('messenger').setIcon('/images/messenger/talk-balloons-off.png');
         
-        Ext.getCmp("ClientDialog").setIconClass('messenger-icon-off');
-        Ext.getCmp("ClientDialog").connected = false;
-        Ext.getCmp("ClientDialog").status = IMConst.ST_UNAVAILABLE.id;
-        
+        // Unsetting main window configs
+        var IMwindow = Ext.getCmp("ClientDialog");
+        if (IMwindow) {
+            Ext.getCmp("ClientDialog").setIconClass('messenger-icon-off');
+            Ext.getCmp("ClientDialog").connected = false;
+            Ext.getCmp("ClientDialog").status = IMConst.ST_UNAVAILABLE.id;
+        }
+
         // Disable action Add Group
         Ext.getCmp('messenger-group-mngt-add').disable();
         Ext.getCmp('messenger-contact-add').disable();
         Ext.getCmp('messenger-change-status-button')
             .setIcon('/images/messenger/user_unavailable.png');
-            
+
         // Enable Show/Hide offline contacts
         Ext.getCmp('messenger-show-offline-contacts').disable();
-            
+
         // Close all chats
         var chats = Ext.query('.messenger-chat-window');
         Ext.each(chats, function (item, index) {
             Ext.getCmp(item.id).close();
         });
-        
-        Ext.getCmp('messenger-connect-display').show();
+
+        Ext.getCmp('connectloading').hide();
     },
     changeOfflineContactsDisplay: function () {
         // Change the display based on the button
@@ -576,5 +611,18 @@ Tine.Messenger.Util = {
         } else {
             myField.value += myValue;
         }
+    },
+    
+    callbackWrapper: function (callback) {
+        return function() {
+            try {
+                callback(arguments[0], arguments[1]);
+            } catch (e){
+                console.log('======== REAL ERROR: ' + (e.stack ? e.stack : e));
+            }
+
+            // Return true to keep calling the callback.
+            return true;
+        };
     }
 };
