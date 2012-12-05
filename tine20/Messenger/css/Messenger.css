@@ -386,3 +386,7 @@
 #ClientDialog .x-panel-body,
 .messenger-chat-body .x-panel-body
 {background-color: transparent!important}
+
+.emoticon-button {
+    margin: 5px 0 0 5px;
+}

@@ -57,8 +57,9 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
                                 },
 
                                 failure: function (err, details) {
-                                    console.log(err);
-                                    console.log(details);
+                                    // Hide emoticon loading image
+                                    Ext.getCmp('emoticon-connectloading').hide();
+                                    
                                     Ext.Msg.show({
                                         title: app.i18n._('Emoticons'),
                                         msg: app.i18n._("Can't get Emoticons") + '!',
@@ -83,8 +84,8 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
                                             top: 5,
                                             left: 5
                                         },
-                                        height: 150,
-                                        width: 245,
+                                        height: 175,
+                                        width: 290,
                                         title: app.i18n._('Choose a Emoticon')
                                     });
 
@@ -96,6 +97,7 @@ Tine.Messenger.Chat = Ext.extend(Ext.Window, {
                                         emoticonWindow.add({
                                             xtype: 'button',
                                             icon: file,
+                                            cls: 'emoticon-button',
                                             tooltip: name,
                                             emoticon: text,
                                             handler: function () {
