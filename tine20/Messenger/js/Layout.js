@@ -280,6 +280,8 @@ Tine.Messenger.AddItems = function(_box) {
         items.push(
                 {
                     itemId: 'messenger-chat-notifications',
+                    bodyStyle: 'background: transparent',
+                    frame: false,
                     cls: 'messenger-chat-notifications',
                     border: false,
                     html: ''  

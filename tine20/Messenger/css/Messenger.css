@@ -347,17 +347,22 @@
 }
 
 .messenger-chat-notifications .chat-notification {
-    background-color: #99bbe8;
+    background-color: #000000;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    color: #ffffff;
+    font-family: Verdana, sans-serif;
+    font-weight: bold;
+    opacity: 0.8 !important;
     padding: 5px 15px 3px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
 }
 .messenger-chat-notifications {
     position: absolute;
-    top: auto!important;
-    bottom: 28px;
-    height: 25px;
-    left: 35%!important;
+    left: 60% !important;
+    height: 30px;
+    min-width: 200px;
+    max-width: 400px;
+    width: 40%;
 }
 
 .messenger-groupchat {
