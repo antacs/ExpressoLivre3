@@ -609,6 +609,7 @@ class Felamimail_Model_Message extends Tinebase_Record_Abstract
             if (!empty($recordData[$field])) {
                 $recipients = array();
                 foreach ($recordData[$field] as $addresses) {
+                    $addresses = str_replace(",",";",$addresses);
                     if (substr_count($addresses, '@') > 1) {
                         $recipients = array_merge($recipients, explode($delimiter, $addresses));
                     } else {
@@ -629,7 +630,7 @@ class Felamimail_Model_Message extends Tinebase_Record_Abstract
                     }
                 }
 
-                //if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' ' . print_r($recipients, true));
+                if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . ' ' . print_r($recipients, true));
                 
                 $recordData[$field] = array_unique($recipients);
             }

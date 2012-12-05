@@ -780,7 +780,7 @@ Tine.Felamimail.getSignature = function(id) {
  * @return {String}
  */
 Tine.Felamimail.getEmailStringFromContact = function(contact) {
-    var result = contact.get('n_fileas') + ' <';
+    var result = contact.get('n_fn') + ' <';
     if (contact.get('email') != '') {
         result += contact.get('email');
     } else {
