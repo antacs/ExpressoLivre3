@@ -146,7 +146,9 @@ Tine.Calendar.iMIPDetailsPanel = Ext.extend(Tine.Calendar.EventDetailsPanel, {
         Ext.each(event.data.attendee, function(attender) {
             Ext.each(this.iMIPrecord.get('existing_event').attendee, function(att) {
                 if (att.user_id == attender.user_id.id) {
-                    attender.status_authkey = att.status_authkey;
+                    if (attender.user_id.account_id == Tine.Tinebase.registry.get('currentAccount').accountId) {
+                        attender.status_authkey = att.status_authkey;
+                    }
                     attender.id = att.id;
                 }
             }, this);
