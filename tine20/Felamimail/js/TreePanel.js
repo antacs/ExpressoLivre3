@@ -712,6 +712,11 @@ Ext.extend(Tine.Felamimail.TreePanel, Ext.tree.TreePanel, {
             account = this.accountStore.getById(folderId);
             
         if (folder && !this.isDropSensitive) {
+            var limit = parseInt(folder.get('quota_limit'), 10),
+                usage = parseInt(folder.get('quota_usage'), 10),
+                left = limit - usage,
+                percentage = Math.round(usage/limit * 100),
+                text = String.format(this.app.i18n._('{0} %'), percentage);
             var info = [
                 '<table>',
                     '<tr>',
@@ -726,6 +731,13 @@ Ext.extend(Tine.Felamimail.TreePanel, Ext.tree.TreePanel, {
                         '<td>', this.app.i18n._('Name on Server:'), '</td>',
                         '<td>', folder.get('globalname'), '</td>',
                     '</tr>',
+                    '<tr>',
+                        '<td>', this.app.i18n._('Your quota'), '</td>',
+                        '<td nowrap>',String.format(this.app.i18n._('{0} available (total: {1})'), 
+                    Ext.util.Format.fileSize(left * 1024),
+                    Ext.util.Format.fileSize(limit * 1024)
+                ), '</td>',
+                    '</tr>',                    
                     '<tr>',
                         '<td>', this.app.i18n._('Last update:'), '</td>',
                         '<td>', Tine.Tinebase.common.dateTimeRenderer(folder.get('client_access_time')), '</td>',

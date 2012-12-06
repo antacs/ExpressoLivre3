@@ -1227,7 +1227,13 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
             this.quotaBar.hide();
             return;
         }
-            
+        var treex = this.app.getMainScreen().getTreePanel(),
+                selectedNodes = (treex) ? treex.getSelectionModel().getSelectedNodes() : null;       
+        if(selectedNodes) {
+            var accountInbox = this.app.getFolderStore().queryBy(function(folder) {
+                if(folder.get('id') == selectedNodes[0].id) return folder;
+            }, this).first();
+        }
         if (! accountInbox) {
             var accountInbox = this.app.getFolderStore().queryBy(function(folder) {
                 return folder.isInbox() && (folder.get('account_id') == accountId);
