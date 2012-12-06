@@ -24,6 +24,8 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
 //     */
 //    protected $_tableName = 'felamimail_cache_message';
     
+    const MAXSEARCHRESULTS = 1000;
+    
     /**
      * Model name
      *
@@ -645,7 +647,8 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Mes
         }else{
             
             $ids = $this->_getIds($imapFilters, $_pagination);
-            $maxresults = Tinebase_Config::getInstance()->getConfig('IMAPAdapterMaxSearchResults');
+            $maxresults = Tinebase_Config::getInstance()->getConfig('IMAPAdapterMaxSearchResults', null,
+                    Felamimail_Backend_Cache_Imap_Message::MAXSEARCHRESULTS);
             
             if(count($ids) === 1 && count($_cols) == 2 && $_cols[0] == '_id_' && $_cols[1] == 'messageuid')
             {
