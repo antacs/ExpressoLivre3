@@ -415,8 +415,20 @@ class Syncope_Command_Sync extends Syncope_Command_Wbxml
                     } else {
                         // fetch entries added since last sync
                         $allClientEntries = $this->_contentStateBackend->getFolderState($this->_device, $collectionData['folder']);
-                        $allServerEntries = $dataController->getServerEntries($collectionData['collectionId'], $collectionData['filterType']);
-            
+                        if (trim(Tinebase_Core::getConfig()->messagecache) != 'imap') {
+                        	$allServerEntries = $dataController->getServerEntries($collectionData['collectionId'], $collectionData['filterType']);
+                        } else {
+                        	$tineBaseRecordArray = $dataController->getServerEntries($collectionData['collectionId'], $collectionData['filterType']);
+                        	
+                        	if (is_array($tineBaseRecordArray)) {
+                        		$allServerEntries = $tineBaseRecordArray;
+                        	} else {
+                        		$tineBaseRecordArray = $tineBaseRecordArray->toArray();
+                        		foreach ($tineBaseRecordArray as $idServerEntries){
+                        			$allServerEntries[] = $idServerEntries["id"];
+                        		}
+                        	}
+                        }
                         // add entries
                         $serverDiff = array_diff($allServerEntries, $allClientEntries);
                         // add entries which produced problems during delete from client
@@ -438,7 +450,20 @@ class Syncope_Command_Sync extends Syncope_Command_Wbxml
                         $serverDeletes = array_diff($allClientEntries, $allServerEntries);
             
                         // fetch entries changed since last sync
-                        $serverChanges = $dataController->getChangedEntries($collectionData['collectionId'], $collectionData['syncState']->lastsync, $this->_syncTimeStamp);
+                        if (trim(Tinebase_Core::getConfig()->messagecache) != 'imap') {
+                        	$serverChanges = $dataController->getChangedEntries($collectionData['collectionId'], $collectionData['syncState']->lastsync, $this->_syncTimeStamp);
+                        } else {
+                        	$tineBaseRecordChangesArray = $dataController->getChangedEntries($collectionData['collectionId'], $collectionData['syncState']->lastsync, $this->_syncTimeStamp);
+                        	if (is_array($tineBaseRecordChangesArray)) {
+                        		$serverChanges = $tineBaseRecordChangesArray;
+                        	} else {
+                        		$tineBaseRecordChangesArray = $tineBaseRecordChangesArray->toArray();
+                        		foreach ($tineBaseRecordChangesArray as $idServerChanges){
+                        			$serverChanges[] = $idServerChanges["messageuid"];
+                        		}
+                        	}
+                        }
+
                         $serverChanges = array_merge($serverChanges, $collectionData['forceChange']);
             
                         foreach($serverChanges as $id => $serverId) {
@@ -452,6 +477,7 @@ class Syncope_Command_Sync extends Syncope_Command_Wbxml
             
                         // entries comeing in scope are already in $serverAdds and do not need to
                         // be send with $serverCanges
+                        $serverChanges = array();
                         $serverChanges = array_diff($serverChanges, $serverAdds);
                     }
                 
@@ -465,7 +491,7 @@ class Syncope_Command_Sync extends Syncope_Command_Wbxml
                 if (!empty($collectionData['added']) || !empty($collectionData['changed']) || !empty($collectionData['deleted']) ||
                     !empty($serverAdds) || !empty($serverChanges) || !empty($serverDeletes)) {
                     $collectionData['syncState']->counter++;
-                }
+                } 
                 
                 // collection header
                 $collection = $collections->appendChild($this->_outputDom->createElementNS('uri:AirSync', 'Collection'));

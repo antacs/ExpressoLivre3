@@ -108,20 +108,41 @@ class ActiveSync_Controller_Email extends ActiveSync_Controller_Abstract
         $this->_addContainerFilter($filter, $_folderId);
 
         $startTimeStamp = ($_startTimeStamp instanceof DateTime) ? $_startTimeStamp->format(Tinebase_Record_Abstract::ISO8601LONG) : $_startTimeStamp;
+        if($_endTimeStamp !== NULL and trim(Tinebase_Core::getConfig()->messagecache) != 'imap') $_endTimeStamp->add(new DateInterval('P1D'));
         $endTimeStamp = ($_endTimeStamp instanceof DateTime) ? $_endTimeStamp->format(Tinebase_Record_Abstract::ISO8601LONG) : $_endTimeStamp;
+
+        if (trim(Tinebase_Core::getConfig()->messagecache) != 'imap') {
+        	$filter->addFilter(new Tinebase_Model_Filter_DateTime(
+            	'timestamp',
+            	'after',
+            	$startTimeStamp
+        	));
         
-        $filter->addFilter(new Tinebase_Model_Filter_DateTime(
-            'timestamp',
-            'after',
-            $startTimeStamp
-        ));
-        
-        if($endTimeStamp !== NULL) {
-            $filter->addFilter(new Tinebase_Model_Filter_DateTime(
-                'timestamp',
-                'before',
-                $endTimeStamp
-            ));
+        	if($endTimeStamp !== NULL) {
+            	$filter->addFilter(new Tinebase_Model_Filter_DateTime(
+                	'timestamp',
+                	'before',
+                	$endTimeStamp
+           		));
+        	}
+        } else {
+        	$startTz = timezone_name_from_abbr(null, $_startTimeStamp->timezone * 3600, true);
+        	if($startTz === false) $startTz = timezone_name_from_abbr(null, $_startTimeStamp->timezone * 3600, false);
+        	
+        	$filter->addFilter(new Tinebase_Model_Filter_DateTime(array(
+        			'field' => 'received',
+        			'operator' => 'after',
+        			'value' => $startTimeStamp,
+        			'options' => array('timezone' => $startTz))));
+        	
+        	if($endTimeStamp !== NULL) {
+        		$filter->addFilter(new Tinebase_Model_Filter_DateTime(array(
+        				'field' => 'received',
+        				'operator' => 'before',
+        				'value' => $endTimeStamp,
+        				'options' => array('timezone' => $startTz))));
+        	}
+        	
         }
         
         #if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " filter " . print_r($filter->toArray(), true));
@@ -405,7 +426,7 @@ class ActiveSync_Controller_Email extends ActiveSync_Controller_Abstract
      */
     public function updateEntry($_folderId, $_serverId, SimpleXMLElement $_entry)
     {
-        Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . " CollectionId: $_folderId Id: $_serverId");
+        /*Tinebase_Core::getLogger()->info(__METHOD__ . '::' . __LINE__ . " CollectionId: $_folderId Id: $_serverId");
         
         $xmlData = $_entry->children('uri:Email');
         
@@ -421,7 +442,7 @@ class ActiveSync_Controller_Email extends ActiveSync_Controller_Abstract
             $message = $this->_contentController->get($_serverId);
             $message->timestamp = $this->_syncTimeStamp;
             $this->_contentController->update($message);
-        }
+        }*/
         
         return;
     }
@@ -533,6 +554,31 @@ class ActiveSync_Controller_Email extends ActiveSync_Controller_Abstract
                 'type'          => $this->_getFolderType($folder->localname)
             );
         }
+        
+        if (trim(Tinebase_Core::getConfig()->messagecache) == 'imap') {
+        	$folders = $folderController->getSubfolders($account->getId(), '*');
+        	
+        	foreach ($folders as $folder) {
+        		if (! empty($folder->parent)) {
+        			try {
+        				$parent   = $folderController->getByBackendAndGlobalName($folder->account_id, $folder->parent);
+        				$parentId = $parent->getId();
+        			} catch (Tinebase_Exception_NotFound $ten) {
+        				continue;
+        			}
+        		} else {
+        			$parentId = 0;
+        		}
+        	
+        		$result[$folder->getId()] = array(
+        				'folderId'      => $folder->getId(),
+        				'parentId'      => $parentId,
+        				'displayName'   => $folder->localname,
+        				'type'          => $this->_getFolderType($folder->localname)
+        		);
+        	}       	
+        }
+
         
         #if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ . " folder result " . print_r($result, true));
         
@@ -664,7 +710,12 @@ class ActiveSync_Controller_Email extends ActiveSync_Controller_Abstract
             }
             
             // add period filter
-            $filter->addFilter(new Tinebase_Model_Filter_DateTime('received', 'after', $received->get(Tinebase_Record_Abstract::ISO8601LONG)));
+            //$filter->addFilter(new Tinebase_Model_Filter_DateTime('received', 'after', $received->get(Tinebase_Record_Abstract::ISO8601LONG)));
+            $filter->addFilter(new Tinebase_Model_Filter_DateTime(array(
+            		'field' => 'received',
+            		'operator' => 'after',
+            		'value' => $received->get(Tinebase_Record_Abstract::ISO8601LONG),
+            		'options' => array('timezone' => Tinebase_Core::get('userTimeZone')))));
         }
         
         return $filter;

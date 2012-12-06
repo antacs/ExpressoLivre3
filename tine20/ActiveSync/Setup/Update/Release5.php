@@ -415,4 +415,30 @@ class ActiveSync_Setup_Update_Release5 extends Setup_Update_Abstract
         
         $this->setApplicationVersion('ActiveSync', '5.8');
     }
+    
+    /**
+     * update to 5.9
+     * - Alter field lenght
+    *
+     * @return void
+     */
+    public function update_8()
+    {
+    	$this->validateTableVersion('acsync_content', '5');
+    	
+        $declaration = new Setup_Backend_Schema_Field_Xml('
+            <field>
+                <name>contentid</name>
+                <type>text</type>
+                <length>255</length>
+            </field>
+        ');
+        $this->_backend->alterCol('acsync_content', $declaration);
+    
+    	$this->setTableVersion('acsync_content', '6');
+ 
+    	$this->setApplicationVersion('ActiveSync', '5.9');
+    }
+
+    
 }
