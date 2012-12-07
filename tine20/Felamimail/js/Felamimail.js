@@ -96,7 +96,7 @@ Tine.Felamimail.Application = Ext.extend(Tine.Tinebase.Application, {
     verifyTrashToClean: function(account_id) {
         if(!account_id) return;
         if(!Tine.Felamimail.registry.get('preferences').get('deleteFromTrash')) return;
-        Ext.MessageBox.wait(_('Please wait'), _('Verifying trash folder'));
+         Ext.MessageBox.wait(this.i18n._('Please wait'),this.i18n._('Verifying trash folder'));
         var params = {
           method: 'Felamimail.deleteMsgsBeforeDate'
         };

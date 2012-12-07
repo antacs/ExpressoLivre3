@@ -29,6 +29,10 @@ msgstr "Adicionar contas de email"
 msgid "Create new email accounts"
 msgstr "Criar novas contas de email"
 
+#: js/GridPanel.js:311
+msgid "Export"
+msgstr "Exportar"
+
 #: Controller/Message/Flags.php:24
 #: js/GridPanel.js:582
 msgid "Answered"
@@ -477,7 +481,7 @@ msgstr "Id"
 #: js/GridPanel.js:480
 #: js/Model.js:146
 msgid "Flags"
-msgstr "Marcadores"
+msgstr "Etiquetas"
 
 #: js/GridPanel.js:493
 #: js/Model.js:143

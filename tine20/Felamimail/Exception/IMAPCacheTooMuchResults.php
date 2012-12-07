@@ -26,6 +26,7 @@ class Felamimail_Exception_IMAPCacheTooMuchResults extends Felamimail_Exception
      * @return void
      */
     public function __construct($_message = 'Too much results, please refine your filter!', $_code = 932) {
-        parent::__construct($_message, $_code);
+        $translate = Tinebase_Translation::getTranslation('Felamimail');
+        parent::__construct($translate->_($_message), $_code);
     }
 }

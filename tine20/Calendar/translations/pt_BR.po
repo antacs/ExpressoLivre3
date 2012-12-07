@@ -67,7 +67,7 @@ msgstr "Alarme para o evento \"%1$s\" at %2$s"
 
 #: Controller/EventNotifications.php:254
 msgid "Event invitation \"%1$s\" at %2$s"
-msgstr "Convite para o evento \"%1$s\" at %2$s"
+msgstr "Convite para o evento \"%1$s\" em %2$s"
 
 #: Controller/EventNotifications.php:258
 msgid "Event \"%1$s\" at %2$s has been canceled"
@@ -372,7 +372,7 @@ msgstr "tem alarme"
 
 #: js/GridView.js:106
 msgid "Tags"
-msgstr "Marcadores"
+msgstr "Etiquetas"
 
 #: js/GridView.js:131
 msgid "blocking"

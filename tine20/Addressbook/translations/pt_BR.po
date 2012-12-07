@@ -474,7 +474,7 @@ msgstr "Tipo"
 
 #: js/ContactGrid.js:106
 msgid "Tags"
-msgstr "Marcadores"
+msgstr "Etiquetas"
 
 #: js/ContactGrid.js:110
 msgid "Full Name"
@@ -783,8 +783,4 @@ msgstr "Contatos Internos"
 msgid "Employee Number"
 msgstr "Matrícula"
 
-#~ msgid "tag"
-#~ msgstr "marcador"
-#~ msgid "marcadores"
-#~ msgstr "etiquetas"
 

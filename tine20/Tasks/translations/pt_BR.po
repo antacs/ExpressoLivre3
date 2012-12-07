@@ -182,12 +182,12 @@ msgstr "Tarefas"
 #: js/Tasks.js:111
 msgid "to do list"
 msgid_plural "to do lists"
-msgstr[0] "lista a fazer"
-msgstr[1] "listas a fazer"
+msgstr[0] "Tarefa"
+msgstr[1] "Tarefas"
 
 #: js/Tasks.js:111
 msgid "to do lists"
-msgstr "listas a fazer"
+msgstr "Tarefas"
 
 #: js/Tasks.js:146
 msgid "Quick search"

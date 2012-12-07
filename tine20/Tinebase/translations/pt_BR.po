@@ -347,7 +347,7 @@ msgstr[1] "{0} segundos"
 
 #: js/Container.js:123
 msgid "All {0}"
-msgstr "Todos {0}"
+msgstr "Todos(as) {0}"
 
 #: js/Container.js:124
 msgid "Shared {0}"
@@ -359,7 +359,7 @@ msgstr "Outros Usuários {0}"
 
 #: js/Container.js:130
 msgid "My {0}"
-msgstr "Meu {0}"
+msgstr "{0}"
 
 #: js/data/Record.js:162
 msgid "Task"
@@ -722,10 +722,16 @@ msgstr "Sua senha expirou. Por favor, troque sua senha:"
 
 #: js/Models.js:131
 #: js/widgets/tags/TagFilter.js:30
+#msgid "Tag"
+#msgid_plural "Tags"
+#msgstr[0] "Etiqueta"
+#msgstr[1] "Etiquetas"
+
+#: js/Models.js:131
+#: js/widgets/tags/TagFilter.js:30
 msgid "Tag"
-msgid_plural "Tags"
-msgstr[0] "Etiqueta"
-msgstr[1] "Etiquetas"
+msgstr "Etiqueta"
+
 
 #: js/Models.js:279
 msgid "Import"
@@ -1623,7 +1629,7 @@ msgstr " {0} registros identificados como duplicados serão descartados.."
 
 #: js/widgets/dialog/ImportDialog.js:751
 msgid "All records will be tagged with: \"{0}\" so you can find them easily."
-msgstr "Todos os registros serão etiquetados com: \"{0}\" assim serão localizados mias facilmente.."
+msgstr "Todos os registros serão marcados com: \"{0}\" assim serão localizados mias facilmente.."
 
 #: js/widgets/dialog/ImportDialog.js:763
 msgid "{0} records have failures and will be discarded."
@@ -1825,15 +1831,15 @@ msgstr "nenhum"
 
 #: js/widgets/grid/FilterModel.js:176
 msgid "is before"
-msgstr "é antes"
+msgstr "antes de"
 
 #: js/widgets/grid/FilterModel.js:177
 msgid "is after"
-msgstr "é após"
+msgstr "após"
 
 #: js/widgets/grid/FilterModel.js:178
 msgid "is within"
-msgstr "está em"
+msgstr "em"
 
 #: js/widgets/grid/FilterModel.js:179
 msgid "is in week no."
@@ -1887,15 +1893,15 @@ msgstr "este mês"
 
 #: js/widgets/grid/FilterModel.js:461
 msgid "last month"
-msgstr "último mês"
+msgstr "mês anterior"
 
 #: js/widgets/grid/FilterModel.js:462
 msgid "this quarter"
-msgstr "este quarto"
+msgstr "este trimestre"
 
 #: js/widgets/grid/FilterModel.js:463
 msgid "last quarter"
-msgstr "próximo quarto"
+msgstr "trimestre anterior"
 
 #: js/widgets/grid/FilterModel.js:464
 msgid "this year"
@@ -1903,7 +1909,7 @@ msgstr "este ano"
 
 #: js/widgets/grid/FilterModel.js:465
 msgid "last year"
-msgstr "próximo ano"
+msgstr "ano anterior"
 
 #: js/widgets/grid/FilterModel.js:469
 msgid "tomorrow"
@@ -1919,7 +1925,7 @@ msgstr "próximo mês"
 
 #: js/widgets/grid/FilterModel.js:472
 msgid "next quarter"
-msgstr "próximo quarto"
+msgstr "próximo trimestre"
 
 #: js/widgets/grid/FilterModel.js:473
 msgid "next year"
@@ -1937,12 +1943,12 @@ msgstr "Criterio {0}"
 #: js/widgets/grid/FilterPanel.js:256
 #: js/widgets/grid/FilterToolbarQuickFilterPlugin.js:181
 msgid "show details"
-msgstr "Exibir detalhes"
+msgstr "Pesquisa Avançada"
 
 #: js/widgets/grid/FilterPanel.js:257
 #: js/widgets/grid/FilterToolbarQuickFilterPlugin.js:182
 msgid "Always show advanced filters"
-msgstr "Sempre exibir filtros avançados"
+msgstr "Exibir filtros avançados"
 
 #: js/widgets/grid/FilterStructureTreePanel.js:35
 #: js/widgets/grid/FilterStructureTreePanel.js:52
@@ -2225,7 +2231,7 @@ msgstr "Definido ..."
 
 #: js/widgets/tags/TagCombo.js:48
 msgid "tag name"
-msgstr "nome da etiqueta"
+msgstr "nome do etiqueta"
 
 #: js/widgets/tags/TagCombo.js:150
 #: js/widgets/tags/TagCombo.js:155
@@ -2251,7 +2257,7 @@ msgstr "Selecionar Etiqueta"
 
 #: js/widgets/tags/TagsMassAttachAction.js:116
 msgid "Attaching Tag"
-msgstr "Atribuindo etiqueta"
+msgstr "Atribuindo Etiqueta"
 
 #: js/widgets/tags/TagsMassDetachAction.js:18
 msgid "Detach tag(s)"
@@ -2259,7 +2265,7 @@ msgstr "Retirar etiquetas"
 
 #: js/widgets/tags/TagsMassDetachAction.js:84
 msgid "Select Tag(s) to detach"
-msgstr "Selecione eqtiqueta(s) para retirar"
+msgstr "Selecione etiqueta(s) para retirar"
 
 #: js/widgets/tags/TagsPanel.js:92
 #: js/widgets/tags/TagsPanel.js:117
@@ -2274,7 +2280,7 @@ msgstr "Adicionar Nova Etiqueta Pessoal"
 #: js/widgets/tags/TagsPanel.js:96
 #: js/widgets/tags/TagsPanel.js:121
 msgid "Please note: You create a personal tag. Only you can see it!"
-msgstr "Nota: Ao criar uma etiqueta pessoal. Apenas você pode vê-la!"
+msgstr "Nota: Você criou uma etiqueta pessoal. Apenas você pode vê-la!"
 
 #: js/widgets/tags/TagsPanel.js:96
 #: js/widgets/tags/TagsPanel.js:121
@@ -2330,7 +2336,7 @@ msgstr[1] "Excluir Etiquetas"
 msgid "Realy Delete Selected Tag?"
 msgid_plural "Realy Delete Selected Tags?"
 msgstr[0] "Realmente Excluir Etiqueta Selecionada?"
-msgstr[1] "Realmente Excluir Etiquetas Selecionadas?"
+msgstr[1] "Realmente Excluir Etiqueta Selecionadas?"
 
 #: js/widgets/tags/TagsPanel.js:271
 msgid "the selected tag will be deleted and disapear for all entries"
@@ -2393,7 +2399,7 @@ msgstr "Por favor, aguarde..."
 
 #: js/widgets/tags/TagToggleBox.js:152
 msgid "Detaching Tags"
-msgstr "Retirando Etiquetas"
+msgstr "Retirando Etiqueta(s)"
 
 #: js/widgets/TimezoneChooser.js:37
 #: Preference.php:87
@@ -2426,7 +2432,7 @@ msgstr "Baixar"
 
 #: js/widgets/tree/ContextMenu.js:176
 msgid "New {0}"
-msgstr "Novo {0}"
+msgstr "Novo(a) {0}"
 
 #: js/widgets/tree/ContextMenu.js:176
 msgid "Please enter the name of the new {0}:"

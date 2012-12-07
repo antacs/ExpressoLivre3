@@ -278,7 +278,7 @@ Tine.widgets.dialog.ImportDialog = Ext.extend(Tine.widgets.dialog.WizardPanel, {
                     xtype: 'label',
                     ref: '../../exampleLink',
                     html: example ? ('<p><a href="' + example + '">' + _('Download example file') + '</a></p>') : '<p>&nbsp;</p>'
-                }, {
+                }/*, {
                     xtype: 'displayfield',
 //                    fieldLabel: _('Import description'),
                     ref: '../../definitionDescription',
@@ -286,7 +286,7 @@ Tine.widgets.dialog.ImportDialog = Ext.extend(Tine.widgets.dialog.WizardPanel, {
                     value: description,
                     cls: 'x-ux-display-background-border',
                     style: 'padding-left: 5px;'
-                }]
+                }*/]
             }],
             nextIsAllowed: (function() {
                 return this.definitionCombo && this.definitionCombo.getValue() && this.uploadButton && this.uploadButton.fileRecord;
