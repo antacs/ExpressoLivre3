@@ -712,9 +712,10 @@ msgstr[1] "Férias"
 
 #: js/Model.js:678
 msgid "Rule"
-msgid_plural "Rules"
-msgstr[0] "Regra"
-msgstr[1] "Regras"
+#msgid_plural "Rules"
+msgstr "Regra"
+#msgstr[0] "Regra"
+#msgstr[1] "Regras"
 
 #: js/Model.js:804
 msgid "Flag"
