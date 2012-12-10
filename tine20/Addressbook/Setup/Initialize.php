@@ -44,8 +44,6 @@ class Addressbook_Setup_Initialize extends Setup_Initialize
         // set current user
         $initialUser = Tinebase_User::getInstance()->getUserByProperty('accountLoginName', $initialAdminUserOptions['adminLoginName']);
         Tinebase_Core::set(Tinebase_Core::USER, $initialUser);
-        
-        parent::_initialize($_application, $_options);
     }
     
     /**
