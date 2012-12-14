@@ -361,11 +361,16 @@ msgstr "Outros Usuários {0}"
 msgid "My {0}"
 msgstr "{0}"
 
+#: ???
+msgid "Contact"
+msgstr "Contato"
+
 #: js/data/Record.js:162
 msgid "Task"
-msgid_plural "Tasks"
-msgstr[0] "Tarefa"
-msgstr[1] "Tarefas"
+msgstr "Tarefa"
+#msgid_plural "Tasks"
+#msgstr[0] "Tarefa"
+#msgstr[1] "Tarefas"
 
 #: js/data/Record.js:166
 msgid "to do list"
@@ -1126,6 +1131,10 @@ msgstr "Selecionado {0}"
 msgid "Folder"
 msgstr "Pasta"
 
+#: js/widgets/container/GrantsDialog.js:52
+msgid "Folders"
+msgstr "Pasta"
+
 #: js/widgets/container/GrantsDialog.js:95
 msgid "Updating Grants"
 msgstr "Atualizando Privilégios"
@@ -1414,7 +1423,7 @@ msgstr "Copiar {0}"
 
 #: js/widgets/dialog/EditDialog.js:390
 msgid "Add New {0}"
-msgstr "Adicionar Novo {0}"
+msgstr "Adicionar {0}"
 
 #: Calendar/js/MainScreenCenterPanel.js:120
 msgid "Edit {0} \"{1}\""

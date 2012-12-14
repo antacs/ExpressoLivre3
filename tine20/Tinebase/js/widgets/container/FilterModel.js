@@ -234,7 +234,7 @@ Tine.widgets.container.FilterModelMultipleValueField = Ext.extend(Ext.ux.form.La
                 sortable: false
             },
             columns:  [
-                {id: 'name', header: String.format(_('Selected  {0}'), this.containersName), dataIndex: 'name'}
+                {id: 'name', header: String.format(_('Selected  {0}'), _(this.containersName)), dataIndex: 'name'}
             ]
         });
     },
