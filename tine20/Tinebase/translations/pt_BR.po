@@ -3,8 +3,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n !=1;\n"
 "Project-Id-Version: Tine 2.0\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-01-14 16:50-0300\n"
-"Last-Translator: Lavoisier Vieira <lavoisier.vieira@serpro.gov.br>\n"
+"PO-Revision-Date: 2012-12-26 11:06-0300\n"
+"Last-Translator: Antonio Carlos da Silva <antonio-carlos.silva@serpro.gov.br>\n"
 "Language-Team:  <mario.kolling@serpro.gov.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -624,6 +624,7 @@ msgstr "Aguarde, por favor"
 msgid "Login successful. Loading {0}..."
 msgstr "Login realizado com sucesso. Carregando {0}..."
 
+#: js/LoginPanel.js:427
 #: js/LoginPanel.js:354
 #: js/MainMenu.js:227
 msgid "Please wait!"
@@ -2633,6 +2634,10 @@ msgstr "Servidor somente de leitura."
 msgid "New password could not be set! Error: "
 msgstr "Senha não pode ser alterada! Erro: "
 
+#: /Frontend/Json.php:467
+msgid "Login is not permitted. Wait 20 minutes to try again."
+msgstr "Acesso bloqueado temporariamente. Aguarde 20 minutos para tentar novamente."
+
 #: /library/ExtJS/plugins/Ext.ux.form.HtmlEditor.Plugins/src/Ext.ux.form.HtmlEditor.Table.js:9
 msgid "Insert Table"
 msgstr "Inserir Tabela"
@@ -2676,4 +2681,9 @@ msgstr "Tracejada"
 #: /library/ExtJS/plugins/Ext.ux.form.HtmlEditor.Plugins/src/Ext.ux.form.HtmlEditor.Table.js:38
 msgid "Dotted"
 msgstr "Pontilhada"
+
+#LoginPanel.js:427
+msgid "The account is not authorized to login. Please contact the system administrator."
+#msgstr "Acesso não autorizado. Por favor, contate o Administrador do Expresso."
+msgstr "Acesso bloqueado de acordo com a Norma SG018. Favor procurar a SUPGP local."
 

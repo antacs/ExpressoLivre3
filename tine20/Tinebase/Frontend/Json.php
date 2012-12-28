@@ -439,8 +439,48 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
     public function login($username, $password, $securitycode=NULL)
     {
         // try to login user
-        $success = (Tinebase_Controller::getInstance()->login($username, $password, $_SERVER['REMOTE_ADDR'], 'TineJson', $securitycode) === TRUE);
-
+        $success = Tinebase_Controller::getInstance()->login($username, $password, $_SERVER['REMOTE_ADDR'], 'TineJson', $securitycode);
+        $msgerror = "Your username and/or your password are wrong!!!";
+        if(is_array($success) && isset($success[0]))
+        {
+            switch($success[0])
+            {
+                case 'NOT_ACCESS':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "The account is not authorized to login. Please contact the system administrator."
+                            );
+                        break;
+                    }
+                case 'ERROR':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "$msgerror"
+                            );
+                        break;
+                    }   
+                case 'BLOCKED':
+                    {
+                        $response = array(
+                                    'success'      => FALSE,
+                                    'errorMessage' => "Login is not permitted. Wait 20 minutes to try again."
+                            );
+                        break;
+                    }
+                default:
+                    {
+                        $response = array(
+				'success'      => FALSE,
+				'errorMessage' => "$msgerror"
+			);
+                    }
+            }
+            Tinebase_Auth_CredentialCache::getInstance()->getCacheAdapter()->resetCache();
+            return $response;
+        }
+        
         if ($success) {
             $response = array(
 				'success'       => TRUE,
@@ -450,16 +490,16 @@ class Tinebase_Frontend_Json extends Tinebase_Frontend_Json_Abstract
             );
             $success = $this->_setCredentialCacheCookie();
         }
-
+        
         if (! $success) {
             Tinebase_Auth_CredentialCache::getInstance()->getCacheAdapter()->resetCache();
 
             $response = array(
 				'success'      => FALSE,
-				'errorMessage' => "Wrong username or password!"
-			);
+				'errorMessage' => "$msgerror"
+			);   
         }
-
+        
         return $response;
     }
 

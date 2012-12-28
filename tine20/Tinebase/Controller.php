@@ -67,8 +67,8 @@ class Tinebase_Controller extends Tinebase_Controller_Abstract
      * @param   string $_password
      * @param   string $_ipAddress
      * @param   string $_clientIdString
-     * @param  string $securitycode the security code(captcha)      
-     * @return  bool
+     * @param   string $securitycode the security code(captcha)      
+     * @return  bool|array
      */
     public function login($_loginname, $_password, $_ipAddress, $_clientIdString = NULL, $securitycode = NULL)
     {
@@ -94,14 +94,32 @@ class Tinebase_Controller extends Tinebase_Controller_Abstract
                 $this->_checkUserStatus($user, $accessLog);
             }
         }
-        
+         
         if ($accessLog->result === Tinebase_Auth::SUCCESS && $user !== NULL && $user->accountStatus === Tinebase_User::STATUS_ENABLED) {
             $this->_initUser($user, $accessLog, $_password);
             $result = true;
         } else {
             $this->_loginFailed($_loginname, $accessLog);
             $_SESSION['tinebase']['code'] = 'code';
-            $result = false;
+            
+            // Attention: look into function _getUserSelectObject() in tine20/Tinebase/User/Sql.php
+            // when  exceed number max login failure(hardcode to 5 in tine20/Tinebase/User/Abstract.php) fail to find user is blocked or not. return blocked always.
+            if($accessLog->result === Tinebase_Auth::FAILURE_BLOCKED)
+            {
+                $result = array('BLOCKED');
+            }
+            else 
+           {
+                $aux = $authResult->getMessages();
+                if(strpos($aux[1],'0x35') === false)                   
+                { 
+                    $result = array('ERROR');
+                }
+                else
+                {
+                    $result = array('NOT_ACCESS');   
+                }
+           }
         } 
         
         Tinebase_AccessLog::getInstance()->create($accessLog);

@@ -425,7 +425,7 @@ Tine.Tinebase.LoginPanel = Ext.extend(Ext.Panel, {
                         } else {
                             Ext.MessageBox.show({
                                 title: _('Login failure'),
-                                msg: _('Your username and/or your password are wrong!!!'),
+                                msg: _(responseData.errorMessage),
                                 buttons: Ext.MessageBox.OK,
                                 icon: Ext.MessageBox.ERROR,
                                 fn: function () {
