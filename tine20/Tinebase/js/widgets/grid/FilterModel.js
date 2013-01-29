@@ -474,7 +474,7 @@ Ext.extend(Tine.widgets.grid.FilterModel, Ext.util.Observable, {
         ];
         
         var comboOps = this.pastOnly ? pastOps : futureOps.concat(pastOps);
-        var comboValue = 'weekThis';
+        var comboValue = _('this week');
         if (filter.data.value && filter.data.value.toString().match(/^[a-zA-Z]+$/)) {
             comboValue = filter.data.value.toString();
         } else if (this.defaultValue && this.defaultValue.toString().match(/^[a-zA-Z]+$/)) {

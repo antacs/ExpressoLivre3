@@ -1126,7 +1126,7 @@ msgstr "é igual a"
 #: js/widgets/container/FilterModel.js:237
 #: js/widgets/grid/PickerFilter.js:310
 msgid "Selected  {0}"
-msgstr "Selecionado {0}"
+msgstr "{0}(s)"
 
 #: js/widgets/container/GrantsDialog.js:52
 msgid "Folder"

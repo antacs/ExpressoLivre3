@@ -799,3 +799,18 @@ msgstr "Adicionar como \"Bcc\""
 msgid "Remove from recipients"
 msgstr "Remover dos destinatários"
 
+#: /Felamimail/js/ContactGrid.js:113
+msgid "To"
+msgstr "Para"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "Cc"
+msgstr "Cc"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "Bcc"
+msgstr "Cco"
+
+#: /Felamimail/js/ContactGrid.js:113
+msgid "None"
+msgstr "Nenhum"
