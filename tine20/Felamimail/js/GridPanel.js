@@ -720,7 +720,7 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
             
         // refresh is explicit
         this.editBuffer = [];
-            
+        
         if (folder) {
             refresh.disable();
             Tine.log.info('user forced mail check for folder "' + folder.get('localname') + '"');
@@ -791,12 +791,13 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
     
     focusSelectedMessage: function(){
         
-        // Return focus to grid
+// Return focus to grid
         var record = this.getGrid().getSelectionModel().getSelected();
         if (record) {
             this.getGrid().getView().focusRow(this.getGrid().store.indexOf(record));
         }
-      
+       // to show tags...
+       this.loadGridData();               
     },
 
     /**
@@ -1027,7 +1028,7 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
                     'destroy': this.focusSelectedMessage.createDelegate(this)
                 }
             });
-        }
+        } 
     },
     
     /**

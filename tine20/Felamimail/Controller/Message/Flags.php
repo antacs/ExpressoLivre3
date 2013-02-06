@@ -21,7 +21,8 @@ class Felamimail_Controller_Message_Flags extends Felamimail_Controller_Message_
      * imap flags to constants translation
      * @var array
      */
-    protected static $_allowedFlags = array('\Answered' => Zend_Mail_Storage::FLAG_ANSWERED,    // _("Answered")
+    protected static $_allowedFlags = array('Passed'    => Zend_Mail_Storage::FLAG_PASSED,         // _("Passed")
+                                            '\Answered' => Zend_Mail_Storage::FLAG_ANSWERED,    // _("Answered")
                                             '\Seen'     => Zend_Mail_Storage::FLAG_SEEN,        // _("Seen")
                                             '\Deleted'  => Zend_Mail_Storage::FLAG_DELETED,     // _("Deleted")
                                             '\Draft'    => Zend_Mail_Storage::FLAG_DRAFT,       // _("Draft")
