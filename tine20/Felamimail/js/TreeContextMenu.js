@@ -53,7 +53,7 @@ Tine.Felamimail.setTreeContextMenus = function() {
         }
     };
     */
-
+   
     // define additional actions
     var emptyFolderAction = {
         text: this.app.i18n._('Empty Folder'),
@@ -131,7 +131,7 @@ Tine.Felamimail.setTreeContextMenus = function() {
             }, this);
         }
     };
-    
+
     var editAccountAction = {
         text: this.app.i18n._('Edit Account'),
         iconCls: 'FelamimailIconCls',
@@ -325,10 +325,14 @@ Tine.Felamimail.setTreeContextMenus = function() {
     this.contextMenuTrash = Tine.widgets.tree.ContextMenu.getMenu(config);
     
     // account ctx menu
-    if(Tine.Felamimail.registry.get('defaults').useSystemAccount == 1)
-        var actions = [addFolderToRootAction,  manageAclsAction, editVacationAction, editRulesAction, editAccountAction, 'delete'];
+    if(Tine.Felamimail.registry.get('defaults').useSystemAccount == 1){
+        if(Tine.Tinebase.common.hasRight('manage_accounts', 'Felamimail'))
+          var actions = [addFolderToRootAction,  manageAclsAction, editVacationAction, editRulesAction, editAccountAction, 'delete' ];
+        else
+           var actions = [addFolderToRootAction,  manageAclsAction, editVacationAction, editRulesAction, editAccountAction ];  
+    }
     else
-        var actions = [addFolderToRootAction,  editVacationAction, editRulesAction, editAccountAction, 'delete'];
+       var actions = [addFolderToRootAction,  editVacationAction, editRulesAction, editAccountAction, 'delete'];
     
     this.contextMenuAccount = Tine.widgets.tree.ContextMenu.getMenu({
         nodeName: this.app.i18n.n_('Account', 'Accounts', 1),
