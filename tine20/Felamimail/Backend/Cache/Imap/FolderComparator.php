@@ -21,18 +21,20 @@ final class Felamimail_Backend_Cache_Imap_FolderComparator
     protected $_systemFolders = array('inbox', 'drafts', 'sent', 'templates', 'junk', 'trash');
     
     public function __construct(Felamimail_Model_Account $_account = null) {
-        
-        $this->_folderDelimiter = $_account->delimiter;
-        $this->_personalNamespace = rtrim($_account->ns_personal, $this->_folderDelimiter);
-        $this->_sharedNamespace = rtrim(empty($_account->ns_shared) ?
-                $_account->ns_other : $_account->ns_shared, $this->_folderDelimiter);
-
+        if($_account){
+            $this->_folderDelimiter = $_account->delimiter;
+            $this->_personalNamespace = rtrim($_account->ns_personal, $this->_folderDelimiter);
+            $this->_sharedNamespace = rtrim(empty($_account->ns_shared) ? $_account->ns_other : $_account->ns_shared, $this->_folderDelimiter);
+        }
     }
     
     public function compare($_folder1, $_folder2)
     {
-        $folder1 = array_pop(explode($this->_folderDelimiter, $_folder1));
-        $folder2 = array_pop(explode($this->_folderDelimiter, $_folder2));
+        if(!isset($this->_folderDelimiter) or !$this->_folderDelimiter) $this->_folderDelimiter = '/';
+        $aux = explode($this->_folderDelimiter, $_folder1);
+        $folder1 = array_pop($aux); 
+        $aux = explode($this->_folderDelimiter, $_folder2);
+        $folder2 = array_pop($aux);
         
         if (in_array(strtolower($folder1), $this->_systemFolders) && !in_array(strtolower($folder2), $this->_systemFolders))
         {

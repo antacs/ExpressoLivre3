@@ -262,7 +262,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
         
         foreach ($filters as $filter)
         {
-            if (!is_a($filter, Tinebase_Model_Filter_Abstract))
+            if (!is_a($filter, 'Tinebase_Model_Filter_Abstract'))
             {
                 $value = $filter['value'];
                 $field = $filter['field'];
@@ -522,8 +522,10 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
     
     protected function _getImapSortParams(Tinebase_Model_Pagination $_pagination = NULL)
     {
-        if ($_pagination != NULL);
+        if ($_pagination != NULL)
         {
+          if($_pagination->sort)
+           {       
             switch ($_pagination->sort)
             {
                 case 'subject' :
@@ -550,6 +552,7 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                     $sort = array('REVERSE ARRIVAL');
             }   
             return $sort;
+          }   
         }
             
         return array('REVERSE ARRIVAL');

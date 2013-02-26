@@ -311,8 +311,8 @@ Tinebase_Core::getLogger()->alert(__METHOD__ . '#####::#####' . __LINE__ . ' Fol
             }
             
             $localName = Felamimail_Model_Folder::decodeFolderName($folder[$folderDecoded['globalName']]['localName']);
-            
-            if(ereg("^user/[0-9]{11}$",Felamimail_Model_Folder::decodeFolderName($folder[$folderDecoded['globalName']]['globalName'])))
+
+            if(preg_match("/^user\/[0-9]{11}$/",Felamimail_Model_Folder::decodeFolderName($folder[$folderDecoded['globalName']]['globalName'])))
             {        
                     try
                     {
