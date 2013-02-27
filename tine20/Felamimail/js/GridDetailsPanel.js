@@ -336,15 +336,16 @@ Ext.ns('Tine.Felamimail');
             },
             
             showAttachments: function(attachments, messageData) {
-                var result = (attachments.length > 0) ? '<b>' + this.app.i18n._('Attachments') + ':</b> ' : '';
+                var result  = (attachments.length > 0) ? '<b>' + this.app.i18n._('Attachments') + ':</b> ' : '';
+                var resultz = (attachments.length > 1) ? '<span ext:qtip="' + this.app.i18n._('Download all attachments') + '" id="' + Ext.id() + ':' + 'A' + '" class="tinebase-download-link">[' + this.app.i18n._('All attachments') + ']</span>' : '';
                 
                 for (var i=0, id, cls; i < attachments.length; i++) {
                     result += '<span id="' + Ext.id() + ':' + i + '" class="tinebase-download-link">' 
                         + '<i>' + attachments[i].filename + '</i>' 
                         + ' (' + Ext.util.Format.fileSize(attachments[i].size) + ')</span> ';
                 }
-                
-                return result;
+
+                return result + resultz;
             },
 
             showSignatureInfo: function(signature_info, messageData) {
@@ -445,7 +446,7 @@ Ext.ns('Tine.Felamimail');
             'span[class=tinebase-showheaders-link]',
             'span[class=tinebase-addsievefilter-link]'
         ];
-        
+
         // find the correct target
         for (var i=0, target=null, selector=''; i < selectors.length; i++) {
             target = e.getTarget(selectors[i]);
@@ -461,16 +462,26 @@ Ext.ns('Tine.Felamimail');
             case 'span[class=tinebase-download-link]':
                 var idx = target.id.split(':')[1],
                     attachment = this.record.get('attachments')[idx];
-                    
+
                 if (! this.record.bodyIsFetched()) {
                     // sometimes there is bad timing and we do not have the attachments available -> refetch body
                     this.refetchBody(this.record, this.onClick.createDelegate(this, [e]), 'onClick');
                     return;
                 }
-                    
+                
                 // remove part id if set (that is the case in message/rfc822 attachments)
                 var messageId = (this.record.id.match(/_/)) ? this.record.id.split('_')[0] : this.record.id;
-                    
+                
+                if(idx == 'A'){  
+                    new Ext.ux.file.Download({
+                        params: {
+                            requestType: 'HTTP',
+                            method: 'Felamimail.downloadAttachment',
+                            messageId: messageId,
+                            partId: 'A'
+                        }
+                    }).start();
+                } else {
                 if (attachment['content-type'] === 'message/rfc822') {
                     
                     Tine.log.debug('Tine.Felamimail.GridDetailsPanel::onClick openWindow for:"' + messageId + '_' + attachment.partId + '".');
@@ -492,7 +503,7 @@ Ext.ns('Tine.Felamimail');
                         }
                     }).start();
                 }
-                
+                }
                 break;
                 
             case 'a[class=tinebase-email-link]':

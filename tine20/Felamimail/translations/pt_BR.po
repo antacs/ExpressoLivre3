@@ -416,6 +416,14 @@ msgstr "Exibir ou esconder informações do cabeçalho"
 msgid "Attachments"
 msgstr "Anexos"
 
+#: js/GridDetailsPanel.js:340
+msgid "Download all attachments"
+msgstr "baixar todos os anexos"
+
+#: js/GridDetailsPanel.js:340
+msgid "All attachments"
+msgstr "Todos os anexos"
+
 #: js/GridPanel.js:110
 msgid "No Messages found or the cache is empty."
 msgstr "Nenhuma mensagem encontrada ou o cache está vazio."

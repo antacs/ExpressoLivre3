@@ -80,7 +80,11 @@ class Felamimail_Frontend_Http extends Tinebase_Frontend_Http_Abstract
         if (Tinebase_Core::isLogLevel(Zend_Log::DEBUG)) Tinebase_Core::getLogger()->debug(__METHOD__ . '::' . __LINE__ 
             . ' Downloading Attachment ' . $partId . ' of message with id ' . $messageId
         );
-        
+        if( $partId == 'A'){
+                $this->_downloadAllAtachements($messageId);
+                return;
+            }
+            
         $messages = explode(',',$messageId);
         
         $this->_downloadMessagePart($messages, $partId);
@@ -185,4 +189,43 @@ class Felamimail_Frontend_Http extends Tinebase_Frontend_Http_Abstract
         
         exit;
     }
+    
+    /**
+     * download all attachments
+     * 
+     * @param string $_messageId
+     */
+    protected function _downloadAllAtachements($_messageId)
+    {
+        $oldMaxExcecutionTime = Tinebase_Core::setExecutionLifeTime(0);
+        
+        $ZIPfile = new ZipArchive();
+        $tmpFile = tempnam(Tinebase_Core::getTempDir(), 'tine20_');
+        
+        if ($ZIPfile->open($tmpFile) === TRUE) {
+            $attachments = Felamimail_Controller_Message::getInstance()->getAttachments($_messageId);
+            foreach ($attachments as $attachment) {
+                $part = Felamimail_Controller_Message::getInstance()->getMessagePart($_messageId,$attachment['partId']);
+                $ZIPfile->addFromString($part->filename, base64_decode(stream_get_contents($part->getRawStream())));
+            }
+            $ZIPfile->close();
+        }
+        
+        $maxAge = 3600;
+        header('Cache-Control: private, max-age=' . $maxAge);
+        header("Expires: " . gmdate('D, d M Y H:i:s', Tinebase_DateTime::now()->addSecond($maxAge)->getTimestamp()) . " GMT");
+        // overwrite Pragma header from session
+        header("Pragma: cache");
+        header('Content-Disposition: attachment; filename="menssagem.zip"');
+        header("Content-Type: application/zip");
+
+        $stream = fopen($tmpFile, 'r');
+        fpassthru($stream);
+        fclose($stream);
+        unlink($tmpFile);
+        
+        Tinebase_Core::setExecutionLifeTime($oldMaxExcecutionTime);
+        
+        exit;
+     }    
 }
