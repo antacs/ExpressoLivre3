@@ -144,10 +144,7 @@ Tine.Felamimail.Application = Ext.extend(Tine.Tinebase.Application, {
     showActiveVacation: function () {
         var accountsWithActiveVacation = this.getAccountStore().query('sieve_vacation_active', true);
         accountsWithActiveVacation.each(function(item) {
-            Ext.ux.Notification.show(
-                this.i18n._('Active Vacation Message'), 
-                String.format(this.i18n._('Email account "{0}" has an active vacation message.'), item.get('name'))
-            );
+             Ext.MessageBox.alert(this.i18n._('Active Vacation Message'), String.format(this.i18n._('Email account "{0}" has an active vacation message.'), item.get('name')));
         }, this);
     },
 
