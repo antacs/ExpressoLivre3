@@ -54,7 +54,7 @@ Tine.Felamimail.RecipientPickerFavoritePanel = Ext.extend(Tine.widgets.persisten
                     label = this.app.i18n._('All recipients');
                     break;
                 default:
-                    label = String.format(this.app.i18n._('"{0}" recipients'), field);
+                    label = String.format(this.app.i18n._('"{0}" recipients'), this.app.i18n._(field));
                     break;
             }
             this.store.add([new Tine.widgets.persistentfilter.model.PersistentFilter({

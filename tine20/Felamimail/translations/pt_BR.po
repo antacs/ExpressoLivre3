@@ -248,7 +248,7 @@ msgstr "Adicionar como \"Cc\""
 
 #: js/ContactGrid.js:276
 msgid "Add as \"Bcc\""
-msgstr "Adicionar como \"Bcc\""
+msgstr "Adicionar como \"Cco\""
 
 #: js/ContactGrid.js:287
 msgid "Remove from recipients"
@@ -678,7 +678,7 @@ msgstr "Cc"
 
 #: js/Model.js:147
 msgid "Bcc"
-msgstr "Bcc"
+msgstr "Cco"
 
 #: js/Model.js:354
 msgid "Email Accounts"
@@ -743,7 +743,7 @@ msgstr[1] "Listas de marcas"
 
 #: js/RecipientGrid.js:204
 msgid "Click here to set To/CC/BCC."
-msgstr "Clique aqui para informar Para/Cc/Bcc."
+msgstr "Clique aqui para informar Para/Cc/Cco."
 
 #: js/RecipientGrid.js:208
 #: js/RecipientGrid.js:232
@@ -758,7 +758,7 @@ msgstr "Cc:"
 #: js/RecipientGrid.js:214
 #: js/RecipientGrid.js:234
 msgid "Bcc:"
-msgstr "Bcc:"
+msgstr "Cco:"
 
 #: js/RecipientGrid.js:332
 msgid "Remove"
@@ -1259,3 +1259,11 @@ msgstr "Assunto/De/CC/Corpo"
 msgid "Number of contacts exceeds the maximum of 50 permitted."
 msgstr "Número de contatos excede o máximo de 50 permitidos."
 
+msgid "bcc"
+msgstr "Cco"
+
+msgid "cc"
+msgstr "Cc"
+
+msgid "to"
+msgstr "Para"
