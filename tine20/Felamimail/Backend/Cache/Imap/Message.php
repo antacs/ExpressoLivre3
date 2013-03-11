@@ -671,12 +671,12 @@ class Felamimail_Backend_Cache_Imap_Message extends Felamimail_Backend_Cache_Ima
                 $sort = $this->_getImapSortParams($_pagination);
                 $idsInFolder = $imap->sort((array)$sort, (array)$imapFilters['filters']);
 
-                if ($imapFilters['paths'] !== 1 && count($messages) > $maxresults->value) // when searching more than one folder, break on 1000 records
+                if (count($imapFilters['paths']) !== 1 && count($messages) > $maxresults->value) // when searching more than one folder, break on 1000 records
                 {
                     throw new Felamimail_Exception_IMAPCacheTooMuchResults();
                 }
 
-                if($imapFilters['paths'] === 1 && count($_cols) == 2 && $_cols[0] == '_id_' && $_cols[1] == 'messageuid')
+                if(count($imapFilters['paths']) === 1 && count($_cols) == 2 && $_cols[0] == '_id_' && $_cols[1] == 'messageuid')
                 {
                     $return = array();
                     $aux = Felamimail_Backend_Cache_Imap_Folder::decodeFolderUid($folderId);
