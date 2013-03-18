@@ -173,7 +173,7 @@ class Felamimail_Frontend_Http extends Tinebase_Frontend_Http_Abstract
                 header("Expires: " . gmdate('D, d M Y H:i:s', Tinebase_DateTime::now()->addSecond($maxAge)->getTimestamp()) . " GMT");
                 // overwrite Pragma header from session
                 header("Pragma: cache");
-                header('Content-Disposition: attachment; filename="menssagem.zip"');
+                header('Content-Disposition: attachment; filename="mensagem.zip"');
                 header("Content-Type: application/zip");
                 
                 $stream = fopen($tmpFile, 'r');
@@ -216,7 +216,7 @@ class Felamimail_Frontend_Http extends Tinebase_Frontend_Http_Abstract
         header("Expires: " . gmdate('D, d M Y H:i:s', Tinebase_DateTime::now()->addSecond($maxAge)->getTimestamp()) . " GMT");
         // overwrite Pragma header from session
         header("Pragma: cache");
-        header('Content-Disposition: attachment; filename="menssagem.zip"');
+        header('Content-Disposition: attachment; filename="mensagens.zip"');
         header("Content-Type: application/zip");
 
         $stream = fopen($tmpFile, 'r');
