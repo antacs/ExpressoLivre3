@@ -740,8 +740,7 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
     onExportMsgs: function() {
         var sm = this.getGrid().getSelectionModel(),
             filter = sm.getSelectionFilter(),
-            msgsIds = [];
-            
+            msgsIds = '';
         if (sm.isFilterSelect) {
             var msgs = this.getStore(),
                 nextRecord = null;
@@ -751,7 +750,11 @@ Tine.Felamimail.GridPanel = Ext.extend(Tine.widgets.grid.GridPanel, {
         }
         var increaseUnreadCountInTargetFolder = 0;
         msgs.each(function(msg) {
-            msgsIds.push(msg.id);
+            if(msgsIds.length==0) {
+                msgsIds = msgsIds + msg.id;
+            } else { 
+                msgsIds = msgsIds + ',' + msg.id;
+            }
         },  this);
         var downloader = new Ext.ux.file.Download({
             params: {
