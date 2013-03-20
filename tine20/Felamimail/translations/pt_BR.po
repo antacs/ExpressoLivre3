@@ -1268,3 +1268,5 @@ msgstr "Cc"
 msgid "to"
 msgstr "Para"
 
+msgid "Block incoming messages from this sender?"
+msgstr "Não aceitar futuras mensagens deste remetente?"
